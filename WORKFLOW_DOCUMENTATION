@@ -1,5 +1,10 @@
 # SIEM Homelab Project - Build Workflow Documentation
 
+This documentation captures my thought process and technical decisions 
+while building my first enterprise SIEM from scratch. I documented 
+every question I asked and problem I solved because that's what real 
+security work looks like - continuous learning and problem-solving.
+
 ## Project Planning Phase
 
 ### Initial Consultation & Architecture Design
