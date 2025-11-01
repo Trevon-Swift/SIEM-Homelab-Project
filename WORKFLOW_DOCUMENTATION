@@ -1,0 +1,434 @@
+# SIEM Homelab Project - Build Workflow Documentation
+
+## Project Planning Phase
+
+### Initial Consultation & Architecture Design
+
+**Objective**: Create a comprehensive SIEM homelab for GitHub portfolio demonstrating real-world security operations skills.
+
+**Available Resources**:
+- Windows Host Machine with VirtualBox
+- Kali Linux VM (pre-existing)
+- Limited access to Manus AI agent for documentation automation
+- Goal: Perform key functions manually to build practical skills
+
+### Proposed Architecture
+
+**Infrastructure Components**:
+1. **Wazuh Manager** (Ubuntu Server VM) - Central SIEM platform
+2. **Kali Linux** - Attack/penetration testing machine
+3. **Windows 10/11 VM** - Target endpoint with Wazuh agent
+4. **Ubuntu Desktop VM** - Additional monitored endpoint
+5. **Optional: Vulnerable VM** (Metasploitable/DVWA) - Realistic attack scenarios
+
+**Rationale for Technology Selection**:
+- **Wazuh**: Open-source, lightweight, enterprise-grade SIEM (v4.14)
+- **VirtualBox**: Free virtualization platform suitable for homelab
+- **Multi-platform endpoints**: Demonstrates cross-platform monitoring capabilities
+
+### Implementation Phases Overview
+
+**Phase 1**: Wazuh SIEM Manager Deployment
+**Phase 2**: Deploy Monitored Endpoints with Agents
+**Phase 3**: Generate Security Events & Attack Simulations
+**Phase 4**: SIEM Analysis & Custom Detection Rules
+**Phase 5**: Documentation & Portfolio Presentation
+**Phase 6**: Advanced Features (Threat Intel, Dashboards, IR Playbooks)
+
+---
+
+## Pre-Implementation Questions & Decision Points
+
+### Question 1: Scope Management
+**Issue**: Full implementation appeared overwhelming with multiple VMs and configurations.
+
+**Resolution**: Broke down into smallest actionable workflow block focusing on core foundation first (Wazuh Manager deployment only).
+
+**Decision**: Start with Day 1 block - single Ubuntu Server VM with Wazuh installation (2-3 hours).
+
+### Question 2: File Management Clarity
+**Issue**: Confusion about what downloads go on Windows host vs. inside VMs.
+
+**Clarification Established**:
+
+**On Windows Host**:
+- Ubuntu Server 24.04.1 LTS ISO file only
+- ISO remains on host; VirtualBox mounts it virtually
+
+**Inside Ubuntu VM** (after creation):
+- All Wazuh components downloaded via command line
+- All configuration performed in VM terminal
+
+**Workflow Pattern**:
+1. Windows Host → Download ISO → VirtualBox Manager → Create VM
+2. VM Console → Install Ubuntu → Run installation commands
+3. Windows Browser → Access Wazuh web dashboard
+
+### Question 3: VM Timeline & Dependencies
+**Issue**: Uncertainty about when other VMs (Kali, Windows, Metasploitable) enter the workflow.
+
+**Timeline Clarified**:
+
+**Day 1**: Wazuh Manager ONLY
+- Ubuntu Server VM
+- Wazuh installation
+- Foundation for everything else
+
+**Day 2-3**: First Agent (Kali Linux)
+- Install Wazuh agent on existing Kali VM
+- Establishes monitoring capability
+
+**Day 4-5**: Target Machines
+- Windows 10 VM (primary attack target)
+- Ubuntu Desktop VM (optional second target)
+
+**Week 2+**: Advanced Scenarios
+- Metasploitable/DVWA (optional vulnerable systems)
+
+**Rationale**: SIEM must be operational before agents can report to it. Sequential build prevents configuration errors.
+
+### Question 4: Ubuntu Version Selection
+**Issue**: Ubuntu 22.04 LTS initially suggested, but 24.04.1 LTS available.
+
+**Decision**: Use Ubuntu Server 24.04.1 LTS
+
+**Justification**:
+- Extended support until 2029 (vs. 2027 for 22.04)
+- Officially supported by Wazuh 4.14
+- More current security patches
+- Future-proofs portfolio demonstration
+- Stable release (available since April 2024)
+
+### Question 5: CPU Allocation
+**Issue**: Confirmation needed on processor allocation for Wazuh Manager VM.
+
+**Configuration**: 2 CPUs
+
+**Rationale**:
+- Minimum of 1 CPU too sluggish for Wazuh
+- 2 CPUs provides smooth performance for indexing and web dashboard
+- Leaves host resources available for multiple concurrent VMs
+- Standard homelab configuration
+
+### Question 6: Unattended Installation Options
+**Issue**: VirtualBox offers automated "Unattended Install" - unclear if needed.
+
+**Decision**: Skip unattended installation entirely
+
+**Approach**:
+- Leave checkbox unchecked
+- Leave all fields (username, password, hostname) blank
+- Perform manual Ubuntu installation via wizard
+
+**Rationale**:
+- Manual installation provides learning experience
+- Better understanding of configuration choices
+- More control over setup process
+- Avoids potential automation quirks
+- Only adds ~10 minutes to workflow
+
+### Question 7: SSH Key Import
+**Issue**: Ubuntu installer prompts for SSH key import during setup.
+
+**Decision**: Skip SSH key import
+
+**Configuration**: Select "No SSH keys" or continue without import
+
+**Rationale**:
+- Not required for local homelab access
+- VM accessed via VirtualBox console primarily
+- Password authentication sufficient for learning environment
+- OpenSSH server enabled for basic remote access capability
+- SSH keys can be added later if needed for advanced scenarios
+
+### Question 8: AWS Cloud Integration
+**Issue**: Consideration of adding AWS integration for cloud security experience.
+
+**Decision**: Defer AWS to separate future project
+
+**Rationale Against Current Integration**:
+- Adds unnecessary complexity to foundational SIEM learning
+- Incurs AWS costs (even free tier has limitations)
+- Distracts from core SIEM skills (detection, analysis, incident response)
+- Mixing too many technologies in single project
+
+**Current Project Value**:
+- SIEM deployment & configuration
+- Multi-platform monitoring
+- Attack simulation & detection
+- Custom rule creation
+- Log analysis & correlation
+- Incident response procedures
+
+**Future Project Recommendation**:
+- Separate "Cloud SIEM Project" in dedicated GitHub repository
+- Deploy Wazuh/Splunk on AWS EC2
+- Monitor AWS CloudTrail logs
+- AWS-specific threat detection (IAM abuse, S3 exposure)
+- Demonstrates cloud security as distinct skill set
+
+---
+
+## Day 1 Implementation: Wazuh Manager Deployment
+
+### VM Configuration Specifications
+
+**Virtual Machine Settings**:
+- **Name**: Wazuh-Manager
+- **Type**: Linux, Ubuntu (64-bit)
+- **Memory**: 4096 MB (4 GB RAM)
+- **Processors**: 2 CPUs
+- **Storage**: 50 GB VDI (dynamically allocated)
+- **Network**: Bridged Adapter (enables inter-VM communication)
+
+### Installation Procedure
+
+**Step 1: Ubuntu Server Installation**
+- Mounted Ubuntu Server 24.04.1 LTS ISO
+- Manual installation via guided wizard
+- Configuration choices:
+  - Language: English
+  - Keyboard layout: [User-selected]
+  - Network: DHCP (default)
+  - Proxy: None
+  - Mirror: Default
+  - Storage: Use entire disk
+  - Profile setup:
+    - Server name: wazuh-manager
+    - Username: wazuh
+    - Password: [Securely documented]
+  - OpenSSH server: **ENABLED**
+  - Featured snaps: None selected
+  - SSH keys: Skipped
+
+**Step 2: System Updates**
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install curl -y
+```
+
+**Step 3: Wazuh All-in-One Installation**
+```bash
+# Download Wazuh installer script (version 4.14)
+curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh
+
+# Execute all-in-one installation
+sudo bash ./wazuh-install.sh -a
+```
+
+**Installation Duration**: ~20-30 minutes
+
+**Step 4: Credential Management**
+- Admin credentials displayed post-installation
+- Dashboard URL: `https://<wazuh-manager-ip>:443`
+- Admin username: admin
+- Admin password: [Auto-generated - securely stored]
+
+**Step 5: Network Configuration Verification**
+```bash
+ip addr show
+```
+- Documented Wazuh Manager IP address
+- Verified network connectivity
+
+**Step 6: Dashboard Access Verification**
+- Accessed from Windows host browser: `https://<wazuh-manager-ip>`
+- Accepted self-signed certificate warning
+- Successfully authenticated with admin credentials
+- Confirmed dashboard functionality
+
+---
+
+## Documentation Practices Implemented
+
+### Real-Time Documentation Activities
+
+**During Installation**:
+1. **Screenshots captured**:
+   - VirtualBox Manager showing Wazuh-Manager VM
+   - VM Settings (System resources, Network configuration)
+   - Ubuntu installation screens
+   - First successful login
+   - Wazuh dashboard access
+
+2. **Build notes created**:
+   - Timestamp of activities
+   - Configuration decisions and rationale
+   - Questions encountered during process
+   - Problem-solving approaches
+
+3. **GitHub repository structure planned**:
+```
+SIEM-Homelab/
+├── README.md
+├── architecture/
+│   ├── network-diagram.png
+│   └── infrastructure-specs.md
+├── configurations/
+│   ├── wazuh-manager-config.xml
+│   ├── custom-rules.xml
+│   └── agent-configs/
+├── attack-scenarios/
+│   ├── brute-force-attack.md
+│   ├── network-reconnaissance.md
+│   └── malware-simulation.md
+├── detection-analysis/
+│   ├── alert-screenshots/
+│   └── investigation-reports/
+└── scripts/
+    ├── setup-scripts/
+    └── test-scripts/
+```
+
+---
+
+## Key Skills Demonstrated
+
+### Technical Competencies
+
+**Virtualization**:
+- VirtualBox VM creation and configuration
+- Resource allocation optimization
+- Network adapter configuration for multi-VM environments
+
+**Linux System Administration**:
+- Ubuntu Server installation and configuration
+- Command-line package management
+- Network configuration and verification
+- Service management
+
+**SIEM Deployment**:
+- Enterprise SIEM platform installation
+- Web-based management interface configuration
+- Initial system verification
+
+**Security Best Practices**:
+- Credential management
+- SSH configuration
+- Network segmentation planning
+
+### Professional Practices
+
+**Project Management**:
+- Complex project decomposition into manageable phases
+- Scope management and prioritization
+- Timeline planning with dependencies
+
+**Problem-Solving**:
+- Systematic approach to clarifying uncertainties
+- Decision-making with documented rationale
+- Risk assessment (e.g., AWS integration deferral)
+
+**Documentation**:
+- Real-time build logging
+- Decision point documentation
+- Configuration tracking
+- Screenshot evidence collection
+
+---
+
+## Success Criteria Met
+
+✅ **Wazuh Manager VM operational**
+✅ **Ubuntu Server 24.04.1 LTS installed successfully**
+✅ **Wazuh all-in-one package deployed**
+✅ **Web dashboard accessible from host machine**
+✅ **Admin credentials securely documented**
+✅ **Network configuration verified**
+✅ **Foundation established for agent deployment**
+
+---
+
+## Next Steps (Future Sessions)
+
+### Day 2: First Agent Deployment
+- Install Wazuh agent on Kali Linux VM
+- Verify agent check-in on dashboard
+- Configure initial monitoring rules
+
+### Day 3-4: Additional Endpoints
+- Deploy Windows 10 VM with Wazuh agent
+- Deploy Ubuntu Desktop VM with Wazuh agent
+- Verify multi-platform monitoring
+
+### Week 2: Attack Simulation & Detection
+- Conduct reconnaissance from Kali
+- Perform brute-force attacks
+- Test web application vulnerabilities (if DVWA deployed)
+- Document SIEM detections
+
+### Week 3: Custom Detection Engineering
+- Create custom Wazuh rules
+- Configure File Integrity Monitoring
+- Implement Active Response actions
+- Build custom dashboards
+
+### Week 4: Portfolio Finalization
+- Complete documentation with Manus AI assistance
+- Finalize GitHub repository
+- Create Notion knowledge base
+- Prepare presentation materials
+
+---
+
+## Lessons Learned
+
+### Planning Phase Insights
+
+**Importance of Incremental Approach**:
+- Breaking complex projects into minimal viable blocks prevents overwhelm
+- Single-focus sessions (e.g., "just get Wazuh running") provide clear success criteria
+- Sequential dependencies must be understood before beginning
+
+**Clarification Before Execution**:
+- Understanding file locations and workflow boundaries prevents configuration errors
+- Knowing which tools run where (host vs. VM) critical for troubleshooting
+- Timeline clarity helps maintain focus and prevents premature complexity
+
+**Technology Selection**:
+- Choosing current LTS versions balances stability with relevance
+- Open-source tools (Wazuh) provide enterprise capabilities at zero cost
+- Deferring secondary features (AWS) maintains project focus
+
+### Technical Insights
+
+**Resource Allocation**:
+- 2 CPUs and 4GB RAM sufficient for SIEM manager
+- Bridged networking essential for multi-VM communication
+- Dynamic disk allocation appropriate for homelab flexibility
+
+**Installation Best Practices**:
+- Manual installation provides deeper understanding than automation
+- Documentation during installation captures decisions while fresh
+- Verification steps (dashboard access) confirm success before proceeding
+
+---
+
+## Portfolio Value Proposition
+
+This project demonstrates:
+
+**Technical Skills**:
+- Enterprise SIEM deployment and management
+- Multi-platform system administration (Linux, Windows)
+- Virtualization and network configuration
+- Security monitoring and analysis
+
+**Professional Skills**:
+- Systematic problem-solving methodology
+- Project planning and scope management
+- Comprehensive documentation practices
+- Continuous learning and adaptation
+
+**Security Operations Competencies**:
+- Infrastructure design for security monitoring
+- Preparation for threat detection and response
+- Understanding of attack/defense dynamics
+- Foundation for incident response capabilities
+
+---
+
+*Documentation Date: November 1, 2025*
+*Project Status: Phase 1 Complete - Wazuh Manager Operational*
+*Wazuh Version: 4.14*
+*Next Milestone: Agent Deployment (Day 2)*
