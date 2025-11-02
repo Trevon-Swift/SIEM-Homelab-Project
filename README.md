@@ -305,9 +305,9 @@ SIEM-Homelab-Project/
 ## 🔗 Related Documentation
 
 - [**Workflow Documentation**](WORKFLOW_DOCUMENTATION.md) - Detailed build process, questions, and decisions
-- [**Setup Guide**](documentation/setup-guide.md) - Step-by-step installation instructions *(Coming soon)*
-- [**Attack Scenarios**](attack-scenarios/) - Simulated attacks and detection analysis *(Coming soon)*
-- [**Detection Rules**](configurations/wazuh-manager/custom-rules.xml) - Custom rule development *(Coming soon)*
+- [**Setup Guide**] - Step-by-step installation instructions *(Coming soon)*
+- [**Attack Scenarios**] - Simulated attacks and detection analysis *(Coming soon)*
+- [**Detection Rules**] - Custom rule development *(Coming soon)*
 
 ---
 
