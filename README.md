@@ -318,10 +318,15 @@ SIEM-Homelab-Project/
 This project demonstrates:
 
 ✅ **Practical SIEM expertise** - Hands-on experience with enterprise security monitoring
+
 ✅ **Multi-platform knowledge** - Windows and Linux system administration
+
 ✅ **Threat detection skills** - Understanding of attack patterns and detection logic
+
 ✅ **Documentation excellence** - Clear, comprehensive technical writing
+
 ✅ **Self-directed learning** - Ability to research, plan, and execute complex projects
+
 ✅ **Security operations mindset** - Think like both attacker and defender
 
 ### Resume Bullet Points
