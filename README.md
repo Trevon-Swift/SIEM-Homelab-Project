@@ -32,20 +32,20 @@ This project demonstrates enterprise-grade Security Information and Event Manage
 │                    Host Machine                         │
 │                  Windows + VirtualBox                   │
 │                                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │   Wazuh      │  │  Kali Linux  │  │  Windows 10  │ │
-│  │   Manager    │◄─┤   (Agent)    │  │   (Agent)    │ │
-│  │  (Ubuntu)    │  │              │  │              │ │
-│  │              │  │   Attacker   │  │    Target    │ │
-│  └──────────────┘  └──────────────┘  └──────────────┘ │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │   Wazuh      │  │  Kali Linux  │  │  Windows 10  │   │
+│  │   Manager    │◄─┤   (Agent)    │  │   (Agent)    │   │
+│  │  (Ubuntu)    │  │              │  │              │   │
+│  │              │  │   Attacker   │  │    Target    │   │
+│  └──────────────┘  └──────────────┘  └──────────────┘   │
 │         │                                               │
-│         └──────────────┐                               │
-│                        ▼                               │
-│                ┌──────────────┐                        │
-│                │Ubuntu Desktop│                        │
-│                │   (Agent)    │                        │
-│                │    Target    │                        │
-│                └──────────────┘                        │
+│         └──────────────┐                                │
+│                        ▼                                │
+│                ┌──────────────┐                         │
+│                │Ubuntu Desktop│                         │
+│                │   (Agent)    │                         │
+│                │    Target    │                         │
+│                └──────────────┘                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
